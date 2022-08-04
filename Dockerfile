@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:experimental
 FROM nvidia/cudagl:10.0-devel-ubuntu18.04
+# FROM nvidia/cuda:10.0-devel-ubuntu18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG UBUNTU_RELEASE=bionic
@@ -7,23 +8,25 @@ ARG UBUNTU_RELEASE=bionic
 WORKDIR /usr/local
 
 # cuDNN
-RUN --mount=type=bind,source=Installers/Nvidia/,target=/usr/local/Installers/Nvidia/ \
-    dpkg -i Installers/Nvidia/libcudnn7*
+# RUN --mount=type=bind,source=Installers/Nvidia/,target=/usr/local/Installers/Nvidia/ \
+#     dpkg -i Installers/Nvidia/libcudnn7*
 
 # TensorRT
-RUN --mount=type=bind,source=Installers/Nvidia/,target=/usr/local/Installers/Nvidia/ \
-    dpkg -i Installers/Nvidia/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt7.0.0.11-ga-20191216_1-1_amd64.deb
+# RUN --mount=type=bind,source=Installers/Nvidia/,target=/usr/local/Installers/Nvidia/ \
+#     dpkg -i Installers/Nvidia/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt7.0.0.11-ga-20191216_1-1_amd64.deb
 
-RUN apt-key add /var/nv-tensorrt-repo-cuda10.0-trt7.0.0.11-ga-20191216/7fa2af80.pub
+# RUN apt-key add /var/nv-tensorrt-repo-cuda10.0-trt7.0.0.11-ga-20191216/7fa2af80.pub
+# RUN apt-key add /var/nv-tensorrt-repo-cuda10.0-trt7.0.0.11-ga-20191216/*.pub
 
 RUN rm /etc/apt/sources.list.d/nvidia-ml.list
 
-RUN apt-get update
+# RUN apt-get update
+RUN apt-get update --allow-insecure-repositories --allow-unauthenticated
 
-RUN apt-get install -y libnvinfer7=7.0.0-1+cuda10.0 libnvonnxparsers7=7.0.0-1+cuda10.0 libnvparsers7=7.0.0-1+cuda10.0 libnvinfer-plugin7=7.0.0-1+cuda10.0 libnvinfer-dev=7.0.0-1+cuda10.0 libnvonnxparsers-dev=7.0.0-1+cuda10.0 libnvparsers-dev=7.0.0-1+cuda10.0 libnvinfer-plugin-dev=7.0.0-1+cuda10.0  python3-libnvinfer=7.0.0-1+cuda10.0
-RUN apt-mark hold libnvinfer7 libnvonnxparsers7 libnvparsers7 libnvinfer-plugin7 libnvinfer-dev libnvonnxparsers-dev libnvparsers-dev libnvinfer-plugin-dev python3-libnvinfer python3-libnvinfer-dev
+# RUN apt-get install -y libnvinfer7=7.0.0-1+cuda10.0 libnvonnxparsers7=7.0.0-1+cuda10.0 libnvparsers7=7.0.0-1+cuda10.0 libnvinfer-plugin7=7.0.0-1+cuda10.0 libnvinfer-dev=7.0.0-1+cuda10.0 libnvonnxparsers-dev=7.0.0-1+cuda10.0 libnvparsers-dev=7.0.0-1+cuda10.0 libnvinfer-plugin-dev=7.0.0-1+cuda10.0  python3-libnvinfer=7.0.0-1+cuda10.0
+# RUN apt-mark hold libnvinfer7 libnvonnxparsers7 libnvparsers7 libnvinfer-plugin7 libnvinfer-dev libnvonnxparsers-dev libnvparsers-dev libnvinfer-plugin-dev python3-libnvinfer python3-libnvinfer-dev
 
-RUN apt-get install -y tensorrt
+#RUN apt-get install -y tensorrt
 
 # ROS
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $UBUNTU_RELEASE main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -31,7 +34,7 @@ RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $UBUNTU_RELEASE main" > 
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
-    apt-get update && \
+    apt-get update --allow-insecure-repositories --allow-unauthenticated && \
     apt-get install -y ros-melodic-desktop-full
 
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
@@ -48,7 +51,7 @@ RUN apt-get install -y python-pip && \
 RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $UBUNTU_RELEASE main" > /etc/apt/sources.list.d/gazebo-stable.list'
 RUN curl https://packages.osrfoundation.org/gazebo.key | apt-key add
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
-    apt-get update && \
+    apt-get update --allow-insecure-repositories --allow-unauthenticated && \
     apt-get install -y gazebo9
 
 # MISC ROS
@@ -79,9 +82,9 @@ RUN --mount=type=bind,source=Installers/Pylon/,target=/usr/local/Installers/Pylo
 RUN echo "source /opt/pylon/bin/pylon-setup-env.sh /opt/pylon" >> ~/.bashrc
 
 # tkDNN
-RUN --mount=type=bind,source=Installers/tkDNN/,target=/usr/local/Installers/tkDNN/,rw \
-    cd /usr/local/Installers/tkDNN && \
-    sh ./install_tkDNN.sh
+# RUN --mount=type=bind,source=Installers/tkDNN/,target=/usr/local/Installers/tkDNN/,rw \
+#     cd /usr/local/Installers/tkDNN && \
+#     sh ./install_tkDNN.sh
 
 # Cleanup
 RUN rm -r -f Installers && \
